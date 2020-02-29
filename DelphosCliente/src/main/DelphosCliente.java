@@ -3,14 +3,16 @@
  */
 package main;
 
+import vistas.Login;
+
 /**
  *
  * @author Carlos González
  */
 public class DelphosCliente {
-
-	public static void main(String[] args) {
-		// TODO code application logic here
-	}
 	
+	public static void main(String[] args) {
+		Login login = new Login();
+		login.setVisible(true);
+	}
 }
