@@ -3,6 +3,9 @@
  */
 package vistas;
 
+import constantes.CodigoOrden;
+import hilos.HiloEnviar;
+import modelo.Usuario;
 import util.Utiles;
 
 /**
@@ -11,7 +14,8 @@ import util.Utiles;
  */
 public class Login extends javax.swing.JFrame {
 
-
+	private HiloEnviar enviar;
+	
 	public Login() {
 		initComponents();
 	}
@@ -127,7 +131,11 @@ public class Login extends javax.swing.JFrame {
 		if (txtUsuario.getText().isEmpty() || txtPassword.getPassword().length == 0) {
 			Utiles.lanzarMensaje("Debes rellenar todos los campos");
 		}else{
-			
+			Usuario u = new Usuario();
+			u.setNombreUsuario(txtUsuario.getText());
+			u.setPasswordString(new String(txtPassword.getPassword()));
+			enviar = new HiloEnviar(u, CodigoOrden.LOGIN);
+			enviar.start();
 		}
     }//GEN-LAST:event_btnEntrarActionPerformed
 
