@@ -6,6 +6,8 @@ package hilos;
 import comunicacion.ComunicacionEstatica;
 import constantes.CodigoOrden;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 import util.Utiles;
 
@@ -19,8 +21,6 @@ public class HiloEnviar implements Runnable {
 	private Object objetoEnviar;
 	//Se corresponde con la isntrucción que va a realizar el hilo del lado del servidor
 	private short accion;
-	//Le pasamos la ventana desde la que se instancia el hilo, para poder pintar mensajes si lo necesitamos
-	private JFrame ventana;
 
 	public HiloEnviar(Object objetoEnviar, short accion) {
 		this.hilo = new Thread(this);
@@ -37,10 +37,13 @@ public class HiloEnviar implements Runnable {
 		try {
 			ComunicacionEstatica.getOutput().writeShort(accion);
 			ComunicacionEstatica.getOutput().writeObject(objetoEnviar);
-			gestionConfirmacion(ComunicacionEstatica.getInput().readBoolean());
-			
+			boolean respuesta = (boolean) ComunicacionEstatica.getInput().readObject();
+			System.out.println(respuesta);
+			gestionConfirmacion(respuesta);
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (ClassNotFoundException ex) {
+			ex.printStackTrace();
 		}	
 	}
 	
