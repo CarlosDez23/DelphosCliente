@@ -4,7 +4,7 @@
 package vistas;
 
 import constantes.CodigoOrden;
-import hilos.HiloEnviar;
+import hilos.HiloGestion;
 import modelo.Usuario;
 import util.Utiles;
 
@@ -14,7 +14,7 @@ import util.Utiles;
  */
 public class Registro extends javax.swing.JFrame {
 	
-	private HiloEnviar enviar;
+	private HiloGestion enviar;
 	
 
 	public Registro() {
@@ -146,7 +146,7 @@ public class Registro extends javax.swing.JFrame {
 		}else{
 			String password = new String(txtPassword.getPassword());
 			Usuario usuario = new Usuario(txtNombre.getText(), password, txtTelefono.getText(), txtDireccion.getText(), (int) (spinnerEdad.getValue()));
-			enviar = new HiloEnviar(usuario, CodigoOrden.REGISTRAR);
+			enviar = new HiloGestion(usuario, CodigoOrden.REGISTRAR);
 			enviar.start();
 		}
     }//GEN-LAST:event_btnRegistroActionPerformed

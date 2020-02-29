@@ -16,14 +16,14 @@ import util.Utiles;
  *
  * @author Carlos González
  */
-public class HiloEnviar implements Runnable {
+public class HiloGestion implements Runnable {
 
 	private Thread hilo;
 	private Object objetoEnviar;
 	//Se corresponde con la isntrucción que va a realizar el hilo del lado del servidor
 	private short accion;
 
-	public HiloEnviar(Object objetoEnviar, short accion) {
+	public HiloGestion(Object objetoEnviar, short accion) {
 		this.hilo = new Thread(this);
 		this.objetoEnviar = objetoEnviar;
 		this.accion = accion;
@@ -77,7 +77,24 @@ public class HiloEnviar implements Runnable {
 		if (aux == null) {
 			Utiles.lanzarMensaje("El usuario no está registrado");
 		}else{
-			Utiles.lanzarMensaje("Usuario registrado");
+			byte rol = aux.getRol();
+			String rolUsuario = "";
+			switch(rol){
+				case 0:
+					rolUsuario = "Sin asignar";
+					break;
+				case 1:
+					rolUsuario ="Alumno";
+					break;
+				case 2:
+					rolUsuario ="Profesor";
+					break;
+				case 3:
+					rolUsuario = "Administrador";
+				default:
+					break;
+			}
+			Utiles.lanzarMensaje("Bienvenido "+aux.getNombreUsuario()+" tu rol es "+rolUsuario);
 		}		
 	}
 }
