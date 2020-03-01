@@ -7,11 +7,11 @@ package vistas;
 import constantes.CodigoOrden;
 import hilos.HiloGestion;
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
+import modelo.Curso;
 import modelo.Usuario;
 import util.Utiles;
 
@@ -20,24 +20,30 @@ import util.Utiles;
  * @author Carlos González
  */
 public class Administracion extends javax.swing.JFrame {
-	
+
 	private String valor;
 	private static ArrayList<Usuario> listaUsuarios;
-	private int fila; 
-	
-	static{
+	private static ArrayList<Curso> listaCur;
+	private int fila;
+
+	static {
 		listaUsuarios = new ArrayList<>();
+		listaCur = new ArrayList<>();
 	}
-	
+
 	public Administracion() {
 		initComponents();
 		listenerSeleccion();
-		this.valor = null; 
+		this.valor = null;
 		this.comboRoles.setVisible(false);
 	}
 
 	public static void setListaUsuarios(ArrayList<Usuario> listaUsuarios) {
 		Administracion.listaUsuarios = listaUsuarios;
+	}
+
+	public static void setListaCursos(ArrayList<Curso> listaCursos) {
+		Administracion.listaCur = listaCursos;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -53,6 +59,12 @@ public class Administracion extends javax.swing.JFrame {
         comboRoles = new javax.swing.JComboBox<>();
         btnSalir = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        listaCursos = new javax.swing.JList<>();
+        btnAddCurso = new javax.swing.JButton();
+        btnModificarCurso = new javax.swing.JButton();
+        btnBorrarCurso = new javax.swing.JButton();
+        btnVolverCursos = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -124,15 +136,48 @@ public class Administracion extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Usuarios", jPanel1);
 
+        jScrollPane3.setViewportView(listaCursos);
+
+        btnAddCurso.setText("CREAR");
+
+        btnModificarCurso.setText("MODIFICAR");
+
+        btnBorrarCurso.setText("BORRAR");
+
+        btnVolverCursos.setText("VOLVER");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 733, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(15, 15, 15)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 355, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(38, 38, 38)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btnAddCurso, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnModificarCurso, javax.swing.GroupLayout.DEFAULT_SIZE, 304, Short.MAX_VALUE)
+                    .addComponent(btnBorrarCurso, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnVolverCursos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(21, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 443, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(15, 15, 15)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 409, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(19, Short.MAX_VALUE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(btnAddCurso)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnModificarCurso)
+                        .addGap(86, 86, 86)
+                        .addComponent(btnBorrarCurso)
+                        .addGap(99, 99, 99)
+                        .addComponent(btnVolverCursos)
+                        .addGap(27, 27, 27))))
         );
 
         jTabbedPane1.addTab("Cursos", jPanel2);
@@ -159,62 +204,59 @@ public class Administracion extends javax.swing.JFrame {
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
 		new HiloGestion(CodigoOrden.LISTAR_USUARIOS, jTable1, this).start();
+		System.out.println(listaCursos);
+		new HiloGestion(CodigoOrden.LISTAR_CURSOS, listaCursos).start();
     }//GEN-LAST:event_formWindowOpened
 
     private void btnActivarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActivarActionPerformed
-        if (valor == null) {
+		if (valor == null) {
 			Utiles.lanzarMensaje("Debes seleccionar un usuario de la tabla");
-		}else{
+		} else {
 			String seleccion = comboRoles.getSelectedItem().toString();
 			if (seleccion.equals("Sin asignar")) {
 				Utiles.lanzarMensaje("Debes seleccionar un rol que asignar al usuario");
-			}else{
-				listaUsuarios.get(fila).setRol((byte)Utiles.gestionRolInversa(seleccion));
+			} else {
+				listaUsuarios.get(fila).setRol((byte) Utiles.gestionRolInversa(seleccion));
 				new HiloGestion(listaUsuarios.get(fila), CodigoOrden.ACTIVAR_USUARIO).start();
-				actualizarTabla();
 			}
 		}
     }//GEN-LAST:event_btnActivarActionPerformed
 
     private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
-        Login login = new Login();
+		Login login = new Login();
 		login.setVisible(true);
 		this.dispose();
     }//GEN-LAST:event_btnSalirActionPerformed
-	
-	private void listenerSeleccion(){
+
+	private void listenerSeleccion() {
 		ListSelectionModel cell = jTable1.getSelectionModel();
 		cell.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		cell.addListSelectionListener(new ListSelectionListener () {
+		cell.addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				fila = jTable1.getSelectedRow();
-				valor =(String) jTable1.getValueAt(fila, 0); 
+				valor = (String) jTable1.getValueAt(fila, 0);
 				btnActivar.setEnabled(true);
-				comboRoles.setVisible(true);	
-			}	
-		});	
-	}
-	
-	private void actualizarTabla() {
-		Timer timer = new Timer();
-		timer.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				Utiles.construirTabla(listaUsuarios, jTable1);
+				comboRoles.setVisible(true);
 			}
-		}, 1000);
+		});
 	}
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnActivar;
+    private javax.swing.JButton btnAddCurso;
+    private javax.swing.JButton btnBorrarCurso;
+    private javax.swing.JButton btnModificarCurso;
     private javax.swing.JButton btnSalir;
+    private javax.swing.JButton btnVolverCursos;
     private javax.swing.JComboBox<String> comboRoles;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTable jTable1;
+    private javax.swing.JList<String> listaCursos;
     // End of variables declaration//GEN-END:variables
 }

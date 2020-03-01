@@ -34,7 +34,6 @@ public class Utiles {
 		case 3:
 			rolUsuario = "Administrador";
 			break;
-
 		case 4:
 			rolUsuario = "Ambos";
 		default:

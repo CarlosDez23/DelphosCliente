@@ -55,11 +55,13 @@ public class ComunicacionEstatica {
 		}
 	}
 	
-	public synchronized static void recibirObjeto(){
+	public synchronized static Object recibirObjeto(){
+		Object objetoRecibido = null;
 		try {
-			input.readObject();
+			objetoRecibido = input.readObject();
 		} catch (IOException | ClassNotFoundException e) {
 			e.printStackTrace();
 		}
+		return objetoRecibido;
 	}
 }
