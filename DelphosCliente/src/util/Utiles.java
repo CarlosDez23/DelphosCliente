@@ -17,4 +17,27 @@ public class Utiles {
 		JOptionPane.showMessageDialog(null, mensaje);
 	}
 	
+	public static String gestionRol(byte idRol) {
+		String rolUsuario = "";
+		switch (idRol) {
+		case 0:
+			rolUsuario = "Sin asignar";
+			break;
+		case 1:
+			rolUsuario = "Alumno";
+			break;
+		case 2:
+			rolUsuario = "Profesor";
+			break;
+		case 3:
+			rolUsuario = "Administrador";
+			break;
+
+		case 4:
+			rolUsuario = "Ambos";
+		default:
+			break;
+		}
+		return rolUsuario;
+	}
 }

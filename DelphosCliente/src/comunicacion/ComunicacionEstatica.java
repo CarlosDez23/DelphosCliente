@@ -54,4 +54,12 @@ public class ComunicacionEstatica {
 			e.printStackTrace();
 		}
 	}
+	
+	public synchronized static void recibirObjeto(){
+		try {
+			input.readObject();
+		} catch (IOException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
 }
