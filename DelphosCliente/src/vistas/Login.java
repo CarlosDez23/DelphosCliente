@@ -134,7 +134,7 @@ public class Login extends javax.swing.JFrame {
 			Usuario u = new Usuario();
 			u.setNombreUsuario(txtUsuario.getText());
 			u.setPasswordString(new String(txtPassword.getPassword()));
-			enviar = new HiloGestion(u, CodigoOrden.LOGIN);
+			enviar = new HiloGestion(u, CodigoOrden.LOGIN, this);
 			enviar.start();
 		}
     }//GEN-LAST:event_btnEntrarActionPerformed
