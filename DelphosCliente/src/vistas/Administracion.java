@@ -171,7 +171,7 @@ public class Administracion extends javax.swing.JFrame {
 			}else{
 				listaUsuarios.get(fila).setRol((byte)Utiles.gestionRolInversa(seleccion));
 				new HiloGestion(listaUsuarios.get(fila), CodigoOrden.ACTIVAR_USUARIO).start();
-				//actualizarTabla();
+				actualizarTabla();
 			}
 		}
     }//GEN-LAST:event_btnActivarActionPerformed
@@ -203,7 +203,7 @@ public class Administracion extends javax.swing.JFrame {
 			public void run() {
 				Utiles.construirTabla(listaUsuarios, jTable1);
 			}
-		}, 2000);
+		}, 1000);
 	}
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
