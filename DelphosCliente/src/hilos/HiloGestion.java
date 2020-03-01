@@ -8,10 +8,10 @@ import constantes.CodigoOrden;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.swing.DefaultListModel;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JTable;
-import javax.swing.table.DefaultTableModel;
 import modelo.Curso;
 import modelo.Usuario;
 import util.Utiles;
@@ -27,10 +27,13 @@ public class HiloGestion implements Runnable {
 	private Object objetoEnviar;
 	//Se corresponde con la isntrucción que va a realizar el hilo del lado del servidor
 	private short accion;
+	//Para la gestión de algunas ids
+	private Object id;
 
 	/**
 	 * Distintos elementos de la interfaz que le vamos a pasar al hilo en diferentes constructores en función de donde sea llamado y el elemento de la interfaz que deba tocar
 	 */
+	
 	//Le pasamos la ventana por si tenemos que desactivarla desde el hilo 
 	private JFrame ventanaActiva;
 
@@ -39,6 +42,9 @@ public class HiloGestion implements Runnable {
 
 	//Lista de la interfaz
 	private JList<String> lista;
+	
+	//Combobox de la interfaz
+	private JComboBox<String> combo;
 
 	public HiloGestion(Object objetoEnviar, short accion) {
 		this.hilo = new Thread(this);
@@ -60,25 +66,25 @@ public class HiloGestion implements Runnable {
 		this.hilo = new Thread(this);
 	}
 
-	public HiloGestion(short accion, JList<String> lista) {
+	public HiloGestion(short accion, JList<String> lista, JComboBox<String> combo) {
 		this.accion = accion;
 		this.lista = lista;
+		this.combo = combo;
 		this.hilo = new Thread(this);
 	}
 
+	public HiloGestion(Object objetoEnviar, short accion, Object id) {
+		this.objetoEnviar = objetoEnviar;
+		this.accion = accion;
+		this.id = id;
+		this.hilo = new Thread(this);
+	}
+	
 	public void start() {
 		this.hilo.start();
 		this.hilo = new Thread(this);
 	}
-
-	public void join() {
-		try {
-			this.hilo.join();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
-
+	
 	@Override
 	public void run() {
 		System.out.println(accion);
@@ -93,7 +99,6 @@ public class HiloGestion implements Runnable {
 			case CodigoOrden.REGISTRAR:
 				gestionRegistro();
 				break;
-
 			case CodigoOrden.LOGIN:
 				gestionLogin();
 				break;
@@ -108,6 +113,23 @@ public class HiloGestion implements Runnable {
 			case CodigoOrden.LISTAR_CURSOS:
 				listarCursos();
 				break;
+
+			case CodigoOrden.ADD_CURSO:
+				insertarCurso();
+				break;
+
+			case CodigoOrden.EDITAR_CURSO:
+				editarCurso();
+				break;
+			
+			case CodigoOrden.ELEGIR_CURSO:
+				asignarCurso();
+				break;
+			
+			case CodigoOrden.ASIGNAR_PROFESOR:
+				asignarCursoProfesor();
+				break;
+
 			default:
 				break;
 			}
@@ -166,12 +188,57 @@ public class HiloGestion implements Runnable {
 			for (int i = 0; i < listaCurso.size(); i++) {
 				Curso aux = (Curso) listaCurso.get(i);
 				demoList.addElement(aux.getCodigoCurso() + "    " + aux.getNombre());
+				this.combo.addItem(aux.getCodigoCurso());
 			}
 			this.lista.setModel(demoList);
 
-		}else{
+		} else {
 			Utiles.lanzarMensaje("Aún no se han registrado cursos");
 		}
-
 	}
+
+	private void insertarCurso() {
+		ComunicacionEstatica.enviarObjeto(objetoEnviar);
+		boolean ok = (boolean) ComunicacionEstatica.recibirObjeto();
+		if (ok) {
+			Utiles.lanzarMensaje("Curso añadido correctamente");
+		} else {
+			Utiles.lanzarMensaje("Ha habido un problema al añadir el curso");
+		}
+	}
+
+	private void editarCurso() {
+		ComunicacionEstatica.enviarObjeto(objetoEnviar);
+		boolean ok = (boolean) ComunicacionEstatica.recibirObjeto();
+		if (ok) {
+			Utiles.lanzarMensaje("Curso modificado correctamente");
+		} else {
+			Utiles.lanzarMensaje("Ha habido un problema al actualizar el curso");
+		}
+	}	
+
+	private void asignarCurso() {
+		ComunicacionEstatica.enviarObjeto(objetoEnviar);
+		boolean ok = (boolean) ComunicacionEstatica.recibirObjeto();
+		if (ok) {
+			Utiles.lanzarMensaje("Curso asignado");
+		} else {
+			Utiles.lanzarMensaje("Ha habido un problema al asignar el curso");
+		}
+	}
+	
+	private void asignarCursoProfesor(){
+		ComunicacionEstatica.enviarObjeto(objetoEnviar);
+		ComunicacionEstatica.enviarObjeto(id);
+		gestionConfirmacion("Profesor asignado a curso correctamente", "Ha habido un problema al asignar al profesor");
+	}
+	
+	private void gestionConfirmacion(String correcto, String incorrecto){
+		boolean ok = (boolean) ComunicacionEstatica.recibirObjeto();
+		if (ok) {
+			Utiles.lanzarMensaje(correcto);
+		} else {
+			Utiles.lanzarMensaje(incorrecto);
+		}
+	}	
 }
