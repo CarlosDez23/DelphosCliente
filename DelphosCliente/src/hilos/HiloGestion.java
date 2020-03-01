@@ -8,7 +8,6 @@ import constantes.CodigoOrden;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.swing.JFrame;
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import modelo.Usuario;
@@ -54,6 +53,14 @@ public class HiloGestion implements Runnable {
 	public void start() {
 		this.hilo.start();
 	}
+	
+	public void join(){
+		try {
+			this.hilo.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
 
 	@Override
 	public void run() {
@@ -76,10 +83,13 @@ public class HiloGestion implements Runnable {
 			case CodigoOrden.LISTAR_USUARIOS:
 				listarUsuarios();
 				break;
+			
+			case CodigoOrden.ACTIVAR_USUARIO:
+				activarUsuario();
+				break;
 			default:
 				break;
 			}
-
 		} catch (IOException | ClassNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -103,6 +113,7 @@ public class HiloGestion implements Runnable {
 		if (aux == null) {
 			Utiles.lanzarMensaje("El usuario no está registrado");
 		} else {
+			new Administracion().setVisible(true);
 			this.ventanaActiva.dispose();
 		}
 	}
@@ -110,24 +121,17 @@ public class HiloGestion implements Runnable {
 	private void listarUsuarios() throws IOException, ClassNotFoundException {
 		System.out.println(accion);
 		ArrayList<Usuario> listaUsuarios = (ArrayList<Usuario>) ComunicacionEstatica.getInput().readObject();
-		if (!listaUsuarios.isEmpty()) {
-			DefaultTableModel modelo = new DefaultTableModel();
-			modelo.addColumn("Nombre");
-			modelo.addColumn("Telefono");
-			modelo.addColumn("Direccion");
-			modelo.addColumn("Edad");
-			modelo.addColumn("Rol");
-			for (int i = 0; i < listaUsuarios.size(); i++) {
-				Usuario aux = (Usuario) listaUsuarios.get(i);
-				modelo.addRow(new Object[]{
-					aux.getNombreUsuario(),
-					aux.getTelefono(),
-					aux.getDireccion(),
-					String.valueOf(aux.getEdad()),
-					Utiles.gestionRol(aux.getRol()),
-				});
-			}
-			tabla.setModel(modelo);
+		Utiles.construirTabla(listaUsuarios, tabla);
+		Administracion.setListaUsuarios(listaUsuarios);
+	}
+	
+	private void activarUsuario() throws IOException, ClassNotFoundException{
+		ComunicacionEstatica.enviarObjeto(objetoEnviar);
+		boolean ok = (boolean) ComunicacionEstatica.getInput().readObject();
+		if (ok) {
+			Utiles.lanzarMensaje("Usuario activado correctamente");
+		} else {
+			Utiles.lanzarMensaje("Ha habido un problema al activar al usuario");
 		}
-	}	
+	}
 }
