@@ -12,10 +12,12 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JTable;
+import modelo.Alumno;
 import modelo.Curso;
 import modelo.Usuario;
 import util.Utiles;
 import vistas.Administracion;
+import vistas.VentanaProfesor;
 
 /**
  *
@@ -33,7 +35,6 @@ public class HiloGestion implements Runnable {
 	/**
 	 * Distintos elementos de la interfaz que le vamos a pasar al hilo en diferentes constructores en función de donde sea llamado y el elemento de la interfaz que deba tocar
 	 */
-	
 	//Le pasamos la ventana por si tenemos que desactivarla desde el hilo 
 	private JFrame ventanaActiva;
 
@@ -42,10 +43,16 @@ public class HiloGestion implements Runnable {
 
 	//Lista de la interfaz
 	private JList<String> lista;
-	
+
 	//Combobox de la interfaz
 	private JComboBox<String> combo;
 
+	/**
+	 * Tendremos distintos constructores en función de las distintas acciones que va a realizar el hilo
+	 *
+	 * @param objetoEnviar
+	 * @param accion
+	 */
 	public HiloGestion(Object objetoEnviar, short accion) {
 		this.hilo = new Thread(this);
 		this.objetoEnviar = objetoEnviar;
@@ -79,12 +86,19 @@ public class HiloGestion implements Runnable {
 		this.id = id;
 		this.hilo = new Thread(this);
 	}
-	
+
+	public HiloGestion(short accion, Object id, JList<String> lista) {
+		this.accion = accion;
+		this.id = id;
+		this.lista = lista;
+		this.hilo = new Thread(this);
+	}
+
 	public void start() {
 		this.hilo.start();
 		this.hilo = new Thread(this);
 	}
-	
+
 	@Override
 	public void run() {
 		System.out.println(accion);
@@ -121,13 +135,25 @@ public class HiloGestion implements Runnable {
 			case CodigoOrden.EDITAR_CURSO:
 				editarCurso();
 				break;
-			
+
 			case CodigoOrden.ELEGIR_CURSO:
 				asignarCurso();
 				break;
-			
+
 			case CodigoOrden.ASIGNAR_PROFESOR:
 				asignarCursoProfesor();
+				break;
+
+			case CodigoOrden.LISTAR_CURSOS_PROFESOR:
+				listarCursosProfesor();
+				break;
+
+			case CodigoOrden.LISTAR_ALUMNOS_CURSO:
+				listarAlumnosCurso();
+				break;
+
+			case CodigoOrden.PONER_NOTA:
+				ponerNota();
 				break;
 
 			default:
@@ -156,8 +182,25 @@ public class HiloGestion implements Runnable {
 		if (aux == null) {
 			Utiles.lanzarMensaje("El usuario no está registrado");
 		} else {
+			tipoLogin(aux);
+		}
+	}
+
+	private void tipoLogin(Usuario u) {
+		switch (u.getRol()) {
+		case 1:
+			break;
+		case 2:
+			new VentanaProfesor(u.getIdUsuario()).setVisible(true);
+			this.ventanaActiva.dispose();
+			break;
+		case 3:
 			new Administracion().setVisible(true);
 			this.ventanaActiva.dispose();
+		case 4:
+			break;
+		default:
+			break;
 		}
 	}
 
@@ -215,7 +258,7 @@ public class HiloGestion implements Runnable {
 		} else {
 			Utiles.lanzarMensaje("Ha habido un problema al actualizar el curso");
 		}
-	}	
+	}
 
 	private void asignarCurso() {
 		ComunicacionEstatica.enviarObjeto(objetoEnviar);
@@ -226,19 +269,59 @@ public class HiloGestion implements Runnable {
 			Utiles.lanzarMensaje("Ha habido un problema al asignar el curso");
 		}
 	}
-	
-	private void asignarCursoProfesor(){
+
+	private void asignarCursoProfesor() {
 		ComunicacionEstatica.enviarObjeto(objetoEnviar);
 		ComunicacionEstatica.enviarObjeto(id);
 		gestionConfirmacion("Profesor asignado a curso correctamente", "Ha habido un problema al asignar al profesor");
 	}
-	
-	private void gestionConfirmacion(String correcto, String incorrecto){
+
+	private void listarCursosProfesor() {
+		ComunicacionEstatica.enviarObjeto(id);
+		ArrayList<Curso> listaCurso = (ArrayList<Curso>) ComunicacionEstatica.recibirObjeto();
+		if (!listaCurso.isEmpty()) {
+			System.out.println(listaCurso.size());
+			VentanaProfesor.setListCur(listaCurso);
+			DefaultListModel demoList = new DefaultListModel();
+			for (int i = 0; i < listaCurso.size(); i++) {
+				Curso aux = (Curso) listaCurso.get(i);
+				demoList.addElement(aux.getCodigoCurso() + "    " + aux.getNombre());
+			}
+			this.lista.setModel(demoList);
+
+		} else {
+			Utiles.lanzarMensaje("Aún no se han registrado cursos");
+		}
+	}
+
+	private void listarAlumnosCurso() {
+		ComunicacionEstatica.enviarObjeto(id);
+		ArrayList<Alumno> listaAlumnos = (ArrayList<Alumno>) ComunicacionEstatica.recibirObjeto();
+		if (!listaAlumnos.isEmpty()) {
+			VentanaProfesor.setListAlu(listaAlumnos);
+			DefaultListModel demoList = new DefaultListModel();
+			for (int i = 0; i < listaAlumnos.size(); i++) {
+				Alumno aux = (Alumno) listaAlumnos.get(i);
+				demoList.addElement(aux.getNombreUsuario());
+			}
+			this.lista.setModel(demoList);
+		} else {
+			Utiles.lanzarMensaje("No hay alumnos en este curso");
+		}
+	}
+
+	private void ponerNota() {
+		ComunicacionEstatica.enviarObjeto(objetoEnviar);
+		gestionConfirmacion("Nota asignada correctamente", "Ha habido un problema al poner la nota");
+
+	}
+
+	private void gestionConfirmacion(String correcto, String incorrecto) {
 		boolean ok = (boolean) ComunicacionEstatica.recibirObjeto();
 		if (ok) {
 			Utiles.lanzarMensaje(correcto);
 		} else {
 			Utiles.lanzarMensaje(incorrecto);
 		}
-	}	
+	}
 }

@@ -145,7 +145,7 @@ public class Login extends javax.swing.JFrame {
 		this.dispose();
     }//GEN-LAST:event_btnRegistrarActionPerformed
 	
-	
+
 	
 
 
