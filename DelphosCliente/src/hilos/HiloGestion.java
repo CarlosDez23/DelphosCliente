@@ -18,6 +18,7 @@ import modelo.Curso;
 import modelo.Usuario;
 import util.Utiles;
 import vistas.Administracion;
+import vistas.VentanaAlumno;
 import vistas.VentanaProfesor;
 
 /**
@@ -156,14 +157,16 @@ public class HiloGestion implements Runnable {
 			case CodigoOrden.PONER_NOTA:
 				ponerNota();
 				break;
-
+			
+			case CodigoOrden.LISTAR_PROFESORES_ALUMNO:
+				listarProfesoresAlumno();
+				break;
 			default:
 				break;
 			}
 		} catch (IOException | ClassNotFoundException e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	private void gestionRegistro() throws IOException, ClassNotFoundException {
@@ -278,7 +281,7 @@ public class HiloGestion implements Runnable {
 	}
 
 	private void listarAlumnosCurso() {
-		ComunicacionEstatica.enviarObjeto(id);
+		ComunicacionEstatica.enviarObjeto(objetoEnviar);
 		ArrayList<Alumno> listaAlumnos = (ArrayList<Alumno>) ComunicacionEstatica.recibirObjeto();
 		if (!listaAlumnos.isEmpty()) {
 			VentanaProfesor.setListAlu(listaAlumnos);
@@ -307,4 +310,23 @@ public class HiloGestion implements Runnable {
 			Utiles.lanzarMensaje(incorrecto);
 		}
 	}
+
+
+	private void listarProfesoresAlumno() {
+		ComunicacionEstatica.enviarObjeto(id);
+		ArrayList<Usuario> listaUsuarios = (ArrayList<Usuario>) ComunicacionEstatica.recibirObjeto();
+		if (!listaUsuarios.isEmpty()) {
+			System.out.println("Entrando a mostrar usuarios");
+			VentanaAlumno.setListProfesores(listaUsuarios);
+			DefaultListModel demoList = new DefaultListModel();
+			for (int i = 0; i < listaUsuarios.size(); i++) {
+				Usuario aux = (Usuario) listaUsuarios.get(i);
+				demoList.addElement(aux.getNombreUsuario());	
+			}
+			this.lista.setModel(demoList);
+		}else{
+			Utiles.lanzarMensaje("Parece que aún no tienes profesores");
+		}
+	}
+	
 }

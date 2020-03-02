@@ -6,6 +6,7 @@
 package controlador;
 
 import javax.swing.JFrame;
+import modelo.Alumno;
 import modelo.Usuario;
 import vistas.Administracion;
 import vistas.VentanaAlumno;
