@@ -5,6 +5,7 @@ package hilos;
 
 import comunicacion.ComunicacionEstatica;
 import constantes.CodigoOrden;
+import controlador.ControladorInterfaz;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.swing.DefaultListModel;
@@ -182,25 +183,7 @@ public class HiloGestion implements Runnable {
 		if (aux == null) {
 			Utiles.lanzarMensaje("El usuario no está registrado");
 		} else {
-			tipoLogin(aux);
-		}
-	}
-
-	private void tipoLogin(Usuario u) {
-		switch (u.getRol()) {
-		case 1:
-			break;
-		case 2:
-			new VentanaProfesor(u.getIdUsuario()).setVisible(true);
-			this.ventanaActiva.dispose();
-			break;
-		case 3:
-			new Administracion().setVisible(true);
-			this.ventanaActiva.dispose();
-		case 4:
-			break;
-		default:
-			break;
+			ControladorInterfaz.tipoLogin(aux, this.ventanaActiva);
 		}
 	}
 
