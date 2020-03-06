@@ -13,8 +13,10 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import modelo.Alumno;
 import modelo.Curso;
+import modelo.Nota;
 import modelo.Usuario;
 import util.Utiles;
 import vistas.Administracion;
@@ -48,6 +50,10 @@ public class HiloGestion implements Runnable {
 
 	//Combobox de la interfaz
 	private JComboBox<String> combo;
+	
+	//TextField de la interfaz
+	private JTextField txtField;
+	
 
 	/**
 	 * Tendremos distintos constructores en función de las distintas acciones que va a realizar el hilo
@@ -96,6 +102,14 @@ public class HiloGestion implements Runnable {
 		this.hilo = new Thread(this);
 	}
 
+	public HiloGestion(short accion, Object objetoEnviar, JTextField txtField) {
+		this.accion = accion;
+		this.objetoEnviar = objetoEnviar;
+		this.txtField = txtField;
+		this.hilo = new Thread(this);
+	}
+	
+	
 	public void start() {
 		this.hilo.start();
 		this.hilo = new Thread(this);
@@ -160,6 +174,10 @@ public class HiloGestion implements Runnable {
 			
 			case CodigoOrden.LISTAR_PROFESORES_ALUMNO:
 				listarProfesoresAlumno();
+				break;
+			
+			case CodigoOrden.VER_NOTA:
+				verNota();
 				break;
 			default:
 				break;
@@ -315,6 +333,7 @@ public class HiloGestion implements Runnable {
 	private void listarProfesoresAlumno() {
 		ComunicacionEstatica.enviarObjeto(id);
 		ArrayList<Usuario> listaUsuarios = (ArrayList<Usuario>) ComunicacionEstatica.recibirObjeto();
+		VentanaAlumno.setListProfesores(listaUsuarios);
 		if (!listaUsuarios.isEmpty()) {
 			System.out.println("Entrando a mostrar usuarios");
 			VentanaAlumno.setListProfesores(listaUsuarios);
@@ -326,6 +345,19 @@ public class HiloGestion implements Runnable {
 			this.lista.setModel(demoList);
 		}else{
 			Utiles.lanzarMensaje("Parece que aún no tienes profesores");
+		}
+	}
+
+	private void verNota() {
+		System.out.println("Entrando notas");
+		System.out.println(objetoEnviar);
+		ComunicacionEstatica.enviarObjeto(objetoEnviar);
+		Nota nota = (Nota)ComunicacionEstatica.recibirObjeto();
+		System.out.println(nota);
+		if (nota == null) {
+			Utiles.lanzarMensaje("Todavía no tienes una nota asignada");
+		}else{
+			this.txtField.setText(String.valueOf(nota.getNota()));
 		}
 	}
 	

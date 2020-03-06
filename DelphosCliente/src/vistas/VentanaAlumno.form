@@ -117,6 +117,9 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="CONSULTAR"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnConsultarActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JTextField" name="txtNota">
           <Properties>
@@ -134,6 +137,9 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="VOLVER"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnVolverActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

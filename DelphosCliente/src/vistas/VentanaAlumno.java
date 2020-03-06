@@ -12,6 +12,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import modelo.Nota;
 import modelo.Usuario;
 
 /**
@@ -64,6 +65,11 @@ public class VentanaAlumno extends javax.swing.JFrame {
         jScrollPane1.setViewportView(listaProfes);
 
         btnConsultar.setText("CONSULTAR");
+        btnConsultar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnConsultarActionPerformed(evt);
+            }
+        });
 
         txtNota.setEnabled(false);
 
@@ -98,6 +104,11 @@ public class VentanaAlumno extends javax.swing.JFrame {
         );
 
         btnVolver.setText("VOLVER");
+        btnVolver.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnVolverActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -134,6 +145,15 @@ public class VentanaAlumno extends javax.swing.JFrame {
 		
     }//GEN-LAST:event_formWindowOpened
 
+    private void btnConsultarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConsultarActionPerformed
+        consultarNota();	
+    }//GEN-LAST:event_btnConsultarActionPerformed
+
+    private void btnVolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVolverActionPerformed
+        new Login().setVisible(true);
+		this.dispose(); 
+    }//GEN-LAST:event_btnVolverActionPerformed
+
 	private void ocultarPanelNota(){
 		pnlNota.setVisible(false);
 	}
@@ -151,6 +171,15 @@ public class VentanaAlumno extends javax.swing.JFrame {
 		});
 	}
 	
+	private void consultarNota() {
+		int idProfesor = listProfesores.get(listaProfes.getSelectedIndex()).getIdUsuario();
+		Nota nota = new Nota();
+		nota.setIdAlumno(idAlumno);
+		nota.setIdProfesor(idProfesor);
+		System.out.println(nota);
+		new HiloGestion(CodigoOrden.VER_NOTA, nota, txtNota).start();
+	}
+	
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnConsultar;
     private javax.swing.JButton btnVolver;
@@ -160,4 +189,6 @@ public class VentanaAlumno extends javax.swing.JFrame {
     private javax.swing.JPanel pnlNota;
     private javax.swing.JTextField txtNota;
     // End of variables declaration//GEN-END:variables
+
+	
 }
