@@ -281,7 +281,7 @@ public class HiloGestion implements Runnable {
 	}
 
 	private void listarAlumnosCurso() {
-		ComunicacionEstatica.enviarObjeto(objetoEnviar);
+		ComunicacionEstatica.enviarObjeto(id);
 		ArrayList<Alumno> listaAlumnos = (ArrayList<Alumno>) ComunicacionEstatica.recibirObjeto();
 		if (!listaAlumnos.isEmpty()) {
 			VentanaProfesor.setListAlu(listaAlumnos);
