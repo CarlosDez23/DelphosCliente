@@ -50,10 +50,9 @@ public class HiloGestion implements Runnable {
 
 	//Combobox de la interfaz
 	private JComboBox<String> combo;
-	
+
 	//TextField de la interfaz
 	private JTextField txtField;
-	
 
 	/**
 	 * Tendremos distintos constructores en función de las distintas acciones que va a realizar el hilo
@@ -108,8 +107,7 @@ public class HiloGestion implements Runnable {
 		this.txtField = txtField;
 		this.hilo = new Thread(this);
 	}
-	
-	
+
 	public void start() {
 		this.hilo.start();
 		this.hilo = new Thread(this);
@@ -122,72 +120,69 @@ public class HiloGestion implements Runnable {
 	}
 
 	private void gestionAccion() {
-		try {
-			ComunicacionEstatica.enviarObjeto(accion);
-			System.out.println(accion);
-			switch (this.accion) {
-			case CodigoOrden.REGISTRAR:
-				gestionRegistro();
-				break;
-			case CodigoOrden.LOGIN:
-				gestionLogin();
-				break;
 
-			case CodigoOrden.LISTAR_USUARIOS:
-				listarUsuarios();
-				break;
+		ComunicacionEstatica.enviarObjeto(accion);
+		System.out.println(accion);
+		switch (this.accion) {
+		case CodigoOrden.REGISTRAR:
+			gestionRegistro();
+			break;
+		case CodigoOrden.LOGIN:
+			gestionLogin();
+			break;
 
-			case CodigoOrden.ACTIVAR_USUARIO:
-				activarUsuario();
-				break;
-			case CodigoOrden.LISTAR_CURSOS:
-				listarCursos();
-				break;
+		case CodigoOrden.LISTAR_USUARIOS:
+			listarUsuarios();
+			break;
 
-			case CodigoOrden.ADD_CURSO:
-				insertarCurso();
-				break;
+		case CodigoOrden.ACTIVAR_USUARIO:
+			activarUsuario();
+			break;
+		case CodigoOrden.LISTAR_CURSOS:
+			listarCursos();
+			break;
 
-			case CodigoOrden.EDITAR_CURSO:
-				editarCurso();
-				break;
+		case CodigoOrden.ADD_CURSO:
+			insertarCurso();
+			break;
 
-			case CodigoOrden.ELEGIR_CURSO:
-				asignarCurso();
-				break;
+		case CodigoOrden.EDITAR_CURSO:
+			editarCurso();
+			break;
 
-			case CodigoOrden.ASIGNAR_PROFESOR:
-				asignarCursoProfesor();
-				break;
+		case CodigoOrden.ELEGIR_CURSO:
+			asignarCurso();
+			break;
 
-			case CodigoOrden.LISTAR_CURSOS_PROFESOR:
-				listarCursosProfesor();
-				break;
+		case CodigoOrden.ASIGNAR_PROFESOR:
+			asignarCursoProfesor();
+			break;
 
-			case CodigoOrden.LISTAR_ALUMNOS_CURSO:
-				listarAlumnosCurso();
-				break;
+		case CodigoOrden.LISTAR_CURSOS_PROFESOR:
+			listarCursosProfesor();
+			break;
 
-			case CodigoOrden.PONER_NOTA:
-				ponerNota();
-				break;
-			
-			case CodigoOrden.LISTAR_PROFESORES_ALUMNO:
-				listarProfesoresAlumno();
-				break;
-			
-			case CodigoOrden.VER_NOTA:
-				verNota();
-				break;
-			default:
-				break;
-			}
-		} catch (IOException | ClassNotFoundException e) {
-			e.printStackTrace();
+		case CodigoOrden.LISTAR_ALUMNOS_CURSO:
+			listarAlumnosCurso();
+			break;
+
+		case CodigoOrden.PONER_NOTA:
+			ponerNota();
+			break;
+
+		case CodigoOrden.LISTAR_PROFESORES_ALUMNO:
+			listarProfesoresAlumno();
+			break;
+
+		case CodigoOrden.VER_NOTA:
+			verNota();
+			break;
+		default:
+			break;
 		}
 	}
 
-	private void gestionRegistro() throws IOException, ClassNotFoundException {
+	private void gestionRegistro() {
 		ComunicacionEstatica.enviarObjeto(objetoEnviar);
 		boolean ok = (boolean) ComunicacionEstatica.recibirObjeto();
 		if (ok) {
@@ -197,7 +192,7 @@ public class HiloGestion implements Runnable {
 		}
 	}
 
-	private void gestionLogin() throws IOException, ClassNotFoundException {
+	private void gestionLogin() {
 		ComunicacionEstatica.enviarObjeto(objetoEnviar);
 		Usuario aux = (Usuario) ComunicacionEstatica.recibirObjeto();
 		System.out.println(aux);
@@ -208,16 +203,16 @@ public class HiloGestion implements Runnable {
 		}
 	}
 
-	private void listarUsuarios() throws IOException, ClassNotFoundException {
+	private void listarUsuarios() {
 		System.out.println(accion);
 		ArrayList<Usuario> listaUsuarios = (ArrayList<Usuario>) ComunicacionEstatica.recibirObjeto();
 		Utiles.construirTabla(listaUsuarios, tabla);
 		Administracion.setListaUsuarios(listaUsuarios);
 	}
 
-	private void activarUsuario() throws IOException, ClassNotFoundException {
+	private void activarUsuario() {
 		ComunicacionEstatica.enviarObjeto(objetoEnviar);
-		boolean ok = (boolean) ComunicacionEstatica.getInput().readObject();
+		boolean ok = (boolean) ComunicacionEstatica.recibirObjeto();
 		if (ok) {
 			Utiles.lanzarMensaje("Usuario activado correctamente");
 		} else {
@@ -329,7 +324,6 @@ public class HiloGestion implements Runnable {
 		}
 	}
 
-
 	private void listarProfesoresAlumno() {
 		ComunicacionEstatica.enviarObjeto(id);
 		ArrayList<Usuario> listaUsuarios = (ArrayList<Usuario>) ComunicacionEstatica.recibirObjeto();
@@ -340,10 +334,10 @@ public class HiloGestion implements Runnable {
 			DefaultListModel demoList = new DefaultListModel();
 			for (int i = 0; i < listaUsuarios.size(); i++) {
 				Usuario aux = (Usuario) listaUsuarios.get(i);
-				demoList.addElement(aux.getNombreUsuario());	
+				demoList.addElement(aux.getNombreUsuario());
 			}
 			this.lista.setModel(demoList);
-		}else{
+		} else {
 			Utiles.lanzarMensaje("Parece que aún no tienes profesores");
 		}
 	}
@@ -352,13 +346,13 @@ public class HiloGestion implements Runnable {
 		System.out.println("Entrando notas");
 		System.out.println(objetoEnviar);
 		ComunicacionEstatica.enviarObjeto(objetoEnviar);
-		Nota nota = (Nota)ComunicacionEstatica.recibirObjeto();
+		Nota nota = (Nota) ComunicacionEstatica.recibirObjeto();
 		System.out.println(nota);
 		if (nota == null) {
 			Utiles.lanzarMensaje("Todavía no tienes una nota asignada");
-		}else{
+		} else {
 			this.txtField.setText(String.valueOf(nota.getNota()));
 		}
 	}
-	
+
 }

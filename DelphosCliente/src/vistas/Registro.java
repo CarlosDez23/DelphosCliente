@@ -6,6 +6,7 @@ package vistas;
 import constantes.CodigoOrden;
 import hilos.HiloGestion;
 import modelo.Usuario;
+import seguridad.Seguridad;
 import util.Utiles;
 
 /**
@@ -132,7 +133,7 @@ public class Registro extends javax.swing.JFrame {
                 .addComponent(btnRegistro)
                 .addGap(18, 18, 18)
                 .addComponent(btnVolver)
-                .addGap(0, 4, Short.MAX_VALUE))
+                .addGap(0, 25, Short.MAX_VALUE))
         );
 
         pack();
@@ -145,7 +146,7 @@ public class Registro extends javax.swing.JFrame {
 			Utiles.lanzarMensaje("Debes tener al menos 13 años");
 		}else{
 			String password = new String(txtPassword.getPassword());
-			Usuario usuario = new Usuario(txtNombre.getText(), password, txtTelefono.getText(), txtDireccion.getText(), (int) (spinnerEdad.getValue()));
+			Usuario usuario = new Usuario(txtNombre.getText(), password, txtTelefono.getText(), txtDireccion.getText(), (int) (spinnerEdad.getValue()), Seguridad.generarClaveSimetrica());
 			enviar = new HiloGestion(usuario, CodigoOrden.REGISTRAR);
 			enviar.start();
 		}

@@ -26,25 +26,12 @@ public class ComunicacionEstatica {
 			servidor = new Socket(DIRECCION, PUERTO);
 			output = new ObjectOutputStream(servidor.getOutputStream());
 			input = new ObjectInputStream(servidor.getInputStream());
+			
 		} catch (UnknownHostException ex) {
 			ex.printStackTrace();
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
-	}
-
-	//Con este getter vamos a poder recoger el Socket donde lo necesitemos
-	public static Socket getServidor() {
-		return servidor;
-	}
-
-	//Igualmente, le hacemos getters a los streams que vayamos a necesitar
-	public static ObjectOutputStream getOutput() {
-		return output;
-	}
-
-	public static ObjectInputStream getInput() {
-		return input;
 	}
 
 	public synchronized static void enviarObjeto(Object object) {
