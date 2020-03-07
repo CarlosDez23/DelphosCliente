@@ -20,6 +20,10 @@ public class ControladorInterfaz {
 	
 	public static void tipoLogin(Usuario u, JFrame ventanaActiva) {
 		switch (u.getRol()) {
+		case 0:
+			new Administracion().setVisible(true);
+			ventanaActiva.dispose();
+			break;
 		case 1:
 			new VentanaAlumno(u.getIdUsuario()).setVisible(true);
 			ventanaActiva.dispose();
@@ -34,6 +38,8 @@ public class ControladorInterfaz {
 		case 4:
 			break;
 		default:
+			new Administracion().setVisible(true);
+			ventanaActiva.dispose();
 			break;
 		}
 	}

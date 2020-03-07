@@ -6,7 +6,6 @@ package hilos;
 import comunicacion.ComunicacionEstatica;
 import constantes.CodigoOrden;
 import controlador.ControladorInterfaz;
-import java.io.IOException;
 import java.util.ArrayList;
 import javax.swing.DefaultListModel;
 import javax.swing.JComboBox;
@@ -18,6 +17,7 @@ import modelo.Alumno;
 import modelo.Curso;
 import modelo.Nota;
 import modelo.Usuario;
+import seguridad.Seguridad;
 import util.Utiles;
 import vistas.Administracion;
 import vistas.VentanaAlumno;
@@ -194,8 +194,12 @@ public class HiloGestion implements Runnable {
 
 	private void gestionLogin() {
 		ComunicacionEstatica.enviarObjeto(objetoEnviar);
+
 		Usuario aux = (Usuario) ComunicacionEstatica.recibirObjeto();
+		Seguridad.claveCifrado = aux.getClaveKey();
+		System.out.println(Seguridad.claveCifrado);
 		System.out.println(aux);
+		System.out.println("Usuario logueado " + aux.toString());
 		if (aux == null) {
 			Utiles.lanzarMensaje("El usuario no está registrado");
 		} else {
@@ -204,15 +208,14 @@ public class HiloGestion implements Runnable {
 	}
 
 	private void listarUsuarios() {
-		System.out.println(accion);
-		ArrayList<Usuario> listaUsuarios = (ArrayList<Usuario>) ComunicacionEstatica.recibirObjeto();
+		ArrayList<Usuario> listaUsuarios = (ArrayList<Usuario>) Seguridad.descifrar(Seguridad.claveCifrado, ComunicacionEstatica.recibirObjeto());
 		Utiles.construirTabla(listaUsuarios, tabla);
 		Administracion.setListaUsuarios(listaUsuarios);
 	}
 
 	private void activarUsuario() {
-		ComunicacionEstatica.enviarObjeto(objetoEnviar);
-		boolean ok = (boolean) ComunicacionEstatica.recibirObjeto();
+		ComunicacionEstatica.enviarObjeto(Seguridad.cifrarConClaveSimetrica(objetoEnviar, Seguridad.claveCifrado));
+		boolean ok = (boolean) Seguridad.descifrar(Seguridad.claveCifrado, ComunicacionEstatica.recibirObjeto());
 		if (ok) {
 			Utiles.lanzarMensaje("Usuario activado correctamente");
 		} else {
@@ -222,7 +225,7 @@ public class HiloGestion implements Runnable {
 
 	private void listarCursos() {
 		System.out.println("Entrando a listar cursos");
-		ArrayList<Curso> listaCurso = (ArrayList<Curso>) ComunicacionEstatica.recibirObjeto();
+		ArrayList<Curso> listaCurso = (ArrayList<Curso>) Seguridad.descifrar(Seguridad.claveCifrado, ComunicacionEstatica.recibirObjeto());
 		System.out.println("Lista de cursos recibida " + listaCurso.size());
 		if (!listaCurso.isEmpty()) {
 			Administracion.setListaCursos(listaCurso);
@@ -240,8 +243,8 @@ public class HiloGestion implements Runnable {
 	}
 
 	private void insertarCurso() {
-		ComunicacionEstatica.enviarObjeto(objetoEnviar);
-		boolean ok = (boolean) ComunicacionEstatica.recibirObjeto();
+		ComunicacionEstatica.enviarObjeto(Seguridad.cifrarConClaveSimetrica(objetoEnviar, Seguridad.claveCifrado));
+		boolean ok = (boolean) Seguridad.descifrar(Seguridad.claveCifrado, ComunicacionEstatica.recibirObjeto());
 		if (ok) {
 			Utiles.lanzarMensaje("Curso añadido correctamente");
 		} else {
@@ -250,8 +253,8 @@ public class HiloGestion implements Runnable {
 	}
 
 	private void editarCurso() {
-		ComunicacionEstatica.enviarObjeto(objetoEnviar);
-		boolean ok = (boolean) ComunicacionEstatica.recibirObjeto();
+		ComunicacionEstatica.enviarObjeto(Seguridad.cifrarConClaveSimetrica(objetoEnviar, Seguridad.claveCifrado));
+		boolean ok = (boolean) Seguridad.descifrar(Seguridad.claveCifrado, ComunicacionEstatica.recibirObjeto());
 		if (ok) {
 			Utiles.lanzarMensaje("Curso modificado correctamente");
 		} else {
@@ -260,8 +263,8 @@ public class HiloGestion implements Runnable {
 	}
 
 	private void asignarCurso() {
-		ComunicacionEstatica.enviarObjeto(objetoEnviar);
-		boolean ok = (boolean) ComunicacionEstatica.recibirObjeto();
+		ComunicacionEstatica.enviarObjeto(Seguridad.cifrarConClaveSimetrica(objetoEnviar, Seguridad.claveCifrado));
+		boolean ok = (boolean) Seguridad.descifrar(Seguridad.claveCifrado, ComunicacionEstatica.recibirObjeto());
 		if (ok) {
 			Utiles.lanzarMensaje("Curso asignado");
 		} else {
@@ -270,14 +273,14 @@ public class HiloGestion implements Runnable {
 	}
 
 	private void asignarCursoProfesor() {
-		ComunicacionEstatica.enviarObjeto(objetoEnviar);
-		ComunicacionEstatica.enviarObjeto(id);
+		ComunicacionEstatica.enviarObjeto(Seguridad.cifrarConClaveSimetrica(objetoEnviar, Seguridad.claveCifrado));
+		ComunicacionEstatica.enviarObjeto(Seguridad.cifrarConClaveSimetrica(id, Seguridad.claveCifrado));
 		gestionConfirmacion("Profesor asignado a curso correctamente", "Ha habido un problema al asignar al profesor");
 	}
 
 	private void listarCursosProfesor() {
-		ComunicacionEstatica.enviarObjeto(id);
-		ArrayList<Curso> listaCurso = (ArrayList<Curso>) ComunicacionEstatica.recibirObjeto();
+		ComunicacionEstatica.enviarObjeto(Seguridad.cifrarConClaveSimetrica(id, Seguridad.claveCifrado));
+		ArrayList<Curso> listaCurso = (ArrayList<Curso>) Seguridad.descifrar(Seguridad.claveCifrado, ComunicacionEstatica.recibirObjeto());
 		if (!listaCurso.isEmpty()) {
 			System.out.println(listaCurso.size());
 			VentanaProfesor.setListCur(listaCurso);
@@ -294,8 +297,8 @@ public class HiloGestion implements Runnable {
 	}
 
 	private void listarAlumnosCurso() {
-		ComunicacionEstatica.enviarObjeto(id);
-		ArrayList<Alumno> listaAlumnos = (ArrayList<Alumno>) ComunicacionEstatica.recibirObjeto();
+		ComunicacionEstatica.enviarObjeto(Seguridad.cifrarConClaveSimetrica(id, Seguridad.claveCifrado));
+		ArrayList<Alumno> listaAlumnos = (ArrayList<Alumno>) Seguridad.descifrar(Seguridad.claveCifrado, ComunicacionEstatica.recibirObjeto());
 		if (!listaAlumnos.isEmpty()) {
 			VentanaProfesor.setListAlu(listaAlumnos);
 			DefaultListModel demoList = new DefaultListModel();
@@ -310,13 +313,13 @@ public class HiloGestion implements Runnable {
 	}
 
 	private void ponerNota() {
-		ComunicacionEstatica.enviarObjeto(objetoEnviar);
+		ComunicacionEstatica.enviarObjeto(Seguridad.cifrarConClaveSimetrica(objetoEnviar, Seguridad.claveCifrado));
 		gestionConfirmacion("Nota asignada correctamente", "Ha habido un problema al poner la nota");
 
 	}
 
-	private void gestionConfirmacion(String correcto, String incorrecto) {
-		boolean ok = (boolean) ComunicacionEstatica.recibirObjeto();
+	private synchronized void gestionConfirmacion(String correcto, String incorrecto) {
+		boolean ok = (boolean) Seguridad.descifrar(Seguridad.claveCifrado, ComunicacionEstatica.recibirObjeto());
 		if (ok) {
 			Utiles.lanzarMensaje(correcto);
 		} else {
@@ -325,8 +328,8 @@ public class HiloGestion implements Runnable {
 	}
 
 	private void listarProfesoresAlumno() {
-		ComunicacionEstatica.enviarObjeto(id);
-		ArrayList<Usuario> listaUsuarios = (ArrayList<Usuario>) ComunicacionEstatica.recibirObjeto();
+		ComunicacionEstatica.enviarObjeto(Seguridad.cifrarConClaveSimetrica(id, Seguridad.claveCifrado));
+		ArrayList<Usuario> listaUsuarios = (ArrayList<Usuario>) Seguridad.descifrar(Seguridad.claveCifrado, ComunicacionEstatica.recibirObjeto());
 		VentanaAlumno.setListProfesores(listaUsuarios);
 		if (!listaUsuarios.isEmpty()) {
 			System.out.println("Entrando a mostrar usuarios");
@@ -345,8 +348,8 @@ public class HiloGestion implements Runnable {
 	private void verNota() {
 		System.out.println("Entrando notas");
 		System.out.println(objetoEnviar);
-		ComunicacionEstatica.enviarObjeto(objetoEnviar);
-		Nota nota = (Nota) ComunicacionEstatica.recibirObjeto();
+		ComunicacionEstatica.enviarObjeto(Seguridad.cifrarConClaveSimetrica(id, Seguridad.claveCifrado));
+		Nota nota = (Nota) Seguridad.descifrar(Seguridad.claveCifrado, ComunicacionEstatica.recibirObjeto());
 		System.out.println(nota);
 		if (nota == null) {
 			Utiles.lanzarMensaje("Todavía no tienes una nota asignada");
