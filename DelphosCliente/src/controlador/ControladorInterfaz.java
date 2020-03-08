@@ -6,7 +6,6 @@
 package controlador;
 
 import javax.swing.JFrame;
-import modelo.Alumno;
 import modelo.Usuario;
 import vistas.Administracion;
 import vistas.VentanaAlumno;
@@ -38,8 +37,6 @@ public class ControladorInterfaz {
 		case 4:
 			break;
 		default:
-			new Administracion().setVisible(true);
-			ventanaActiva.dispose();
 			break;
 		}
 	}

@@ -348,7 +348,7 @@ public class HiloGestion implements Runnable {
 	private void verNota() {
 		System.out.println("Entrando notas");
 		System.out.println(objetoEnviar);
-		ComunicacionEstatica.enviarObjeto(Seguridad.cifrarConClaveSimetrica(id, Seguridad.claveCifrado));
+		ComunicacionEstatica.enviarObjeto(Seguridad.cifrarConClaveSimetrica(objetoEnviar, Seguridad.claveCifrado));
 		Nota nota = (Nota) Seguridad.descifrar(Seguridad.claveCifrado, ComunicacionEstatica.recibirObjeto());
 		System.out.println(nota);
 		if (nota == null) {
@@ -357,5 +357,4 @@ public class HiloGestion implements Runnable {
 			this.txtField.setText(String.valueOf(nota.getNota()));
 		}
 	}
-
 }
