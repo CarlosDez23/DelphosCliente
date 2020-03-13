@@ -4,6 +4,7 @@
 package vistas;
 
 import constantes.CodigoOrden;
+import controlador.ControladorInterfaz;
 import hilos.HiloGestion;
 import modelo.Usuario;
 import seguridad.Seguridad;
@@ -141,9 +142,9 @@ public class Registro extends javax.swing.JFrame {
 
     private void btnRegistroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistroActionPerformed
         if (txtNombre.getText().isEmpty() || txtPassword.getPassword().length == 0 || txtDireccion.getText().isEmpty() || txtTelefono.getText().isEmpty()) {
-			Utiles.lanzarMensaje("Debes cumplimentar correctamente todos los campos");
+			ControladorInterfaz.lanzarMensaje("Debes cumplimentar correctamente todos los campos");
 		}else if((int) spinnerEdad.getValue() < 13){
-			Utiles.lanzarMensaje("Debes tener al menos 13 años");
+			ControladorInterfaz.lanzarMensaje("Debes tener al menos 13 años");
 		}else{
 			String password = new String(txtPassword.getPassword());
 			Usuario usuario = new Usuario(txtNombre.getText(), password, txtTelefono.getText(), txtDireccion.getText(), (int) (spinnerEdad.getValue()), Seguridad.generarClaveSimetrica());

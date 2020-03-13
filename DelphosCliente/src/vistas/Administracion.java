@@ -5,6 +5,7 @@
 package vistas;
 
 import constantes.CodigoOrden;
+import controlador.ControladorInterfaz;
 import hilos.HiloGestion;
 import java.util.ArrayList;
 import javax.swing.ListSelectionModel;
@@ -297,11 +298,11 @@ public class Administracion extends javax.swing.JFrame {
 
     private void btnActivarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActivarActionPerformed
 		if (valor == null) {
-			Utiles.lanzarMensaje("Debes seleccionar un usuario de la tabla");
+			ControladorInterfaz.lanzarMensaje("Debes seleccionar un usuario de la tabla");
 		} else {
 			String seleccion = comboRoles.getSelectedItem().toString();
 			if (seleccion.equals("Sin asignar")) {
-				Utiles.lanzarMensaje("Debes seleccionar un rol que asignar al usuario");
+				ControladorInterfaz.lanzarMensaje("Debes seleccionar un rol que asignar al usuario");
 			} else {
 				listaUsuarios.get(fila).setRol((byte) Utiles.gestionRolInversa(seleccion));
 				new HiloGestion(listaUsuarios.get(fila), CodigoOrden.ACTIVAR_USUARIO).start();
@@ -322,7 +323,7 @@ public class Administracion extends javax.swing.JFrame {
 
     private void btnModificarCursoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarCursoActionPerformed
 		if (listaCursos.getSelectedIndex() == -1) {
-			Utiles.lanzarMensaje("Debes seleccionar un curso para modificarlo");
+			ControladorInterfaz.lanzarMensaje("Debes seleccionar un curso para modificarlo");
 		} else {
 			mostrarElementosGestion();
 			tipoGestion = 1;
@@ -331,7 +332,7 @@ public class Administracion extends javax.swing.JFrame {
 
     private void btnAceptarGestionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarGestionActionPerformed
 		if (txtCodigoCurso.getText().isEmpty() || txtNombreCurso.getText().isEmpty()) {
-			Utiles.lanzarMensaje("Debes rellenar todos los campos del formulario");
+			ControladorInterfaz.lanzarMensaje("Debes rellenar todos los campos del formulario");
 		} else {
 			if (tipoGestion == 0) {
 				insertarCurso(txtCodigoCurso.getText(), txtNombreCurso.getText());
@@ -355,7 +356,7 @@ public class Administracion extends javax.swing.JFrame {
 
     private void btnAsignarCursoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAsignarCursoActionPerformed
 		if (valor == null) {
-			Utiles.lanzarMensaje("Debes seleccionar un usuario para asignarle un curso");
+			ControladorInterfaz.lanzarMensaje("Debes seleccionar un usuario para asignarle un curso");
 		}else{
 			asignarCurso();
 		}

@@ -15,10 +15,7 @@ import modelo.Usuario;
  */
 public class Utiles {
 
-	public static void lanzarMensaje(String mensaje) {
-		JOptionPane.showMessageDialog(null, mensaje);
-	}
-
+	
 	public static String gestionRol(byte idRol) {
 		String rolUsuario = "";
 		switch (idRol) {

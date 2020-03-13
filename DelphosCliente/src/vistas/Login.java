@@ -4,6 +4,7 @@
 package vistas;
 
 import constantes.CodigoOrden;
+import controlador.ControladorInterfaz;
 import hilos.HiloGestion;
 import modelo.Usuario;
 import util.Utiles;
@@ -129,7 +130,7 @@ public class Login extends javax.swing.JFrame {
 
     private void btnEntrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEntrarActionPerformed
 		if (txtUsuario.getText().isEmpty() || txtPassword.getPassword().length == 0) {
-			Utiles.lanzarMensaje("Debes rellenar todos los campos");
+			ControladorInterfaz.lanzarMensaje("Debes rellenar todos los campos");
 		}else{
 			Usuario u = new Usuario();
 			u.setNombreUsuario(txtUsuario.getText());

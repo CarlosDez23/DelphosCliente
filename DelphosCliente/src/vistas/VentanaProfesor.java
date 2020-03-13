@@ -4,6 +4,7 @@
 package vistas;
 
 import constantes.CodigoOrden;
+import controlador.ControladorInterfaz;
 import hilos.HiloGestion;
 import java.util.ArrayList;
 import javax.swing.event.ListSelectionEvent;
@@ -193,7 +194,7 @@ public class VentanaProfesor extends javax.swing.JFrame {
 
     private void btnCalificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCalificarActionPerformed
         if (listaAlumnos.getSelectedIndex() == -1) {
-			Utiles.lanzarMensaje("Debes seleccionar un alumno para calificarlo");
+			ControladorInterfaz.lanzarMensaje("Debes seleccionar un alumno para calificarlo");
 		}else{
 			mostrarPanelCalificacion();
 		}
@@ -205,16 +206,16 @@ public class VentanaProfesor extends javax.swing.JFrame {
 
     private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarActionPerformed
 		if (txtNota.getText().isEmpty()) {
-			Utiles.lanzarMensaje("Debes introducir una nota");
+			ControladorInterfaz.lanzarMensaje("Debes introducir una nota");
 		}else{
 			float nota = Float.parseFloat(txtNota.getText().replace(",", "."));
 			if (nota < 0 || nota > 10) {
-				Utiles.lanzarMensaje("Fallo en la nota");
+				ControladorInterfaz.lanzarMensaje("Fallo en la nota");
 			}else{
 				Nota aux = new Nota();
 				aux.setIdAlumno(listAlu.get(listaAlumnos.getSelectedIndex()).getIdUsuario());
 				aux.setIdProfesor(idProfesor);
-				aux.setNota(nota);
+				aux.setNota(txtNota.getText());
 				new HiloGestion(aux, CodigoOrden.PONER_NOTA).start();
 				ocultarPanelCalificacion();
 			}

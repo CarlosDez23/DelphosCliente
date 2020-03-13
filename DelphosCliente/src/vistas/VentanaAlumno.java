@@ -171,7 +171,7 @@ public class VentanaAlumno extends javax.swing.JFrame {
 		nota.setIdAlumno(idAlumno);
 		nota.setIdProfesor(idProfesor);
 		System.out.println(nota);
-		new HiloGestion(CodigoOrden.VER_NOTA, nota, txtNota).start();
+		new HiloGestion(CodigoOrden.VER_NOTA, nota, txtNota, checkFirma).start();
 	}
 	
     // Variables declaration - do not modify//GEN-BEGIN:variables

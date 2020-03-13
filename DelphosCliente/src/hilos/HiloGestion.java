@@ -6,8 +6,10 @@ package hilos;
 import comunicacion.ComunicacionEstatica;
 import constantes.CodigoOrden;
 import controlador.ControladorInterfaz;
+import java.security.PublicKey;
 import java.util.ArrayList;
 import javax.swing.DefaultListModel;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JList;
@@ -53,13 +55,13 @@ public class HiloGestion implements Runnable {
 
 	//TextField de la interfaz
 	private JTextField txtField;
+	
+	//Checkbox de la interfaz
+	private JCheckBox checkBox;
 
-	/**
-	 * Tendremos distintos constructores en función de las distintas acciones que va a realizar el hilo
-	 *
-	 * @param objetoEnviar
-	 * @param accion
-	 */
+	
+	//Vamos a tener distintos constructores en función de lo que queramos que haga el hilo 
+	
 	public HiloGestion(Object objetoEnviar, short accion) {
 		this.hilo = new Thread(this);
 		this.objetoEnviar = objetoEnviar;
@@ -101,10 +103,11 @@ public class HiloGestion implements Runnable {
 		this.hilo = new Thread(this);
 	}
 
-	public HiloGestion(short accion, Object objetoEnviar, JTextField txtField) {
+	public HiloGestion(short accion, Object objetoEnviar, JTextField txtField, JCheckBox checkBox) {
 		this.accion = accion;
 		this.objetoEnviar = objetoEnviar;
 		this.txtField = txtField;
+		this.checkBox = checkBox;
 		this.hilo = new Thread(this);
 	}
 
@@ -186,9 +189,9 @@ public class HiloGestion implements Runnable {
 		ComunicacionEstatica.enviarObjeto(objetoEnviar);
 		boolean ok = (boolean) ComunicacionEstatica.recibirObjeto();
 		if (ok) {
-			Utiles.lanzarMensaje("Te has registrado correctamente");
+			ControladorInterfaz.lanzarMensaje("Te has registrado correctamente");
 		} else {
-			Utiles.lanzarMensaje("Ha habido un problema con el registro");
+			ControladorInterfaz.lanzarMensaje("Ha habido un problema con el registro");
 		}
 	}
 
@@ -196,12 +199,12 @@ public class HiloGestion implements Runnable {
 		ComunicacionEstatica.enviarObjeto(objetoEnviar);
 
 		Usuario aux = (Usuario) ComunicacionEstatica.recibirObjeto();
+		PublicKey publicaServidor = (PublicKey) ComunicacionEstatica.recibirObjeto();
 		Seguridad.claveCifrado = aux.getClaveKey();
-		System.out.println(Seguridad.claveCifrado);
-		System.out.println(aux);
-		System.out.println("Usuario logueado " + aux.toString());
+		Seguridad.publicaServidor = publicaServidor;
+		System.out.println("Recibida publica del servidor "+Seguridad.publicaServidor);
 		if (aux == null) {
-			Utiles.lanzarMensaje("El usuario no está registrado");
+			ControladorInterfaz.lanzarMensaje("El usuario no está registrado");
 		} else {
 			ControladorInterfaz.tipoLogin(aux, this.ventanaActiva);
 		}
@@ -215,12 +218,7 @@ public class HiloGestion implements Runnable {
 
 	private void activarUsuario() {
 		ComunicacionEstatica.enviarObjeto(Seguridad.cifrarConClaveSimetrica(objetoEnviar, Seguridad.claveCifrado));
-		boolean ok = (boolean) Seguridad.descifrar(Seguridad.claveCifrado, ComunicacionEstatica.recibirObjeto());
-		if (ok) {
-			Utiles.lanzarMensaje("Usuario activado correctamente");
-		} else {
-			Utiles.lanzarMensaje("Ha habido un problema al activar al usuario");
-		}
+		gestionConfirmacion("Usuario activado correctamente", "Ha habido un problema al activar al usuario");
 	}
 
 	private void listarCursos() {
@@ -238,38 +236,23 @@ public class HiloGestion implements Runnable {
 			this.lista.setModel(demoList);
 
 		} else {
-			Utiles.lanzarMensaje("Aún no se han registrado cursos");
+			ControladorInterfaz.lanzarMensaje("Aún no se han registrado cursos");
 		}
 	}
 
 	private void insertarCurso() {
 		ComunicacionEstatica.enviarObjeto(Seguridad.cifrarConClaveSimetrica(objetoEnviar, Seguridad.claveCifrado));
-		boolean ok = (boolean) Seguridad.descifrar(Seguridad.claveCifrado, ComunicacionEstatica.recibirObjeto());
-		if (ok) {
-			Utiles.lanzarMensaje("Curso añadido correctamente");
-		} else {
-			Utiles.lanzarMensaje("Ha habido un problema al añadir el curso");
-		}
+		gestionConfirmacion("Curso añadido", "Ha habido un problema al añadir el curso");
 	}
 
 	private void editarCurso() {
 		ComunicacionEstatica.enviarObjeto(Seguridad.cifrarConClaveSimetrica(objetoEnviar, Seguridad.claveCifrado));
-		boolean ok = (boolean) Seguridad.descifrar(Seguridad.claveCifrado, ComunicacionEstatica.recibirObjeto());
-		if (ok) {
-			Utiles.lanzarMensaje("Curso modificado correctamente");
-		} else {
-			Utiles.lanzarMensaje("Ha habido un problema al actualizar el curso");
-		}
+		gestionConfirmacion("Curso modificado correctamente", "Ha habido un problema al actualizar el curso");
 	}
 
 	private void asignarCurso() {
 		ComunicacionEstatica.enviarObjeto(Seguridad.cifrarConClaveSimetrica(objetoEnviar, Seguridad.claveCifrado));
-		boolean ok = (boolean) Seguridad.descifrar(Seguridad.claveCifrado, ComunicacionEstatica.recibirObjeto());
-		if (ok) {
-			Utiles.lanzarMensaje("Curso asignado");
-		} else {
-			Utiles.lanzarMensaje("Ha habido un problema al asignar el curso");
-		}
+		gestionConfirmacion("Curso asignado", "Ha habido un problema al asignar el curso");
 	}
 
 	private void asignarCursoProfesor() {
@@ -292,7 +275,7 @@ public class HiloGestion implements Runnable {
 			this.lista.setModel(demoList);
 
 		} else {
-			Utiles.lanzarMensaje("Aún no se han registrado cursos");
+			ControladorInterfaz.lanzarMensaje("Aún no se han registrado cursos");
 		}
 	}
 
@@ -308,7 +291,7 @@ public class HiloGestion implements Runnable {
 			}
 			this.lista.setModel(demoList);
 		} else {
-			Utiles.lanzarMensaje("No hay alumnos en este curso");
+			ControladorInterfaz.lanzarMensaje("No hay alumnos en este curso");
 		}
 	}
 
@@ -316,15 +299,6 @@ public class HiloGestion implements Runnable {
 		ComunicacionEstatica.enviarObjeto(Seguridad.cifrarConClaveSimetrica(objetoEnviar, Seguridad.claveCifrado));
 		gestionConfirmacion("Nota asignada correctamente", "Ha habido un problema al poner la nota");
 
-	}
-
-	private synchronized void gestionConfirmacion(String correcto, String incorrecto) {
-		boolean ok = (boolean) Seguridad.descifrar(Seguridad.claveCifrado, ComunicacionEstatica.recibirObjeto());
-		if (ok) {
-			Utiles.lanzarMensaje(correcto);
-		} else {
-			Utiles.lanzarMensaje(incorrecto);
-		}
 	}
 
 	private void listarProfesoresAlumno() {
@@ -341,7 +315,7 @@ public class HiloGestion implements Runnable {
 			}
 			this.lista.setModel(demoList);
 		} else {
-			Utiles.lanzarMensaje("Parece que aún no tienes profesores");
+			ControladorInterfaz.lanzarMensaje("Parece que aún no tienes profesores");
 		}
 	}
 
@@ -352,9 +326,23 @@ public class HiloGestion implements Runnable {
 		Nota nota = (Nota) Seguridad.descifrar(Seguridad.claveCifrado, ComunicacionEstatica.recibirObjeto());
 		System.out.println(nota);
 		if (nota == null) {
-			Utiles.lanzarMensaje("Todavía no tienes una nota asignada");
+			ControladorInterfaz.lanzarMensaje("Todavía no tienes una nota asignada");
 		} else {
-			this.txtField.setText(String.valueOf(nota.getNota()));
+			this.txtField.setText(nota.getNota());
+			if (Seguridad.verificarMensaje(nota)) {
+				this.checkBox.setSelected(true);
+			}else{
+				ControladorInterfaz.lanzarMensaje("La firma no es válida");
+			}
+		}
+	}
+
+	private synchronized void gestionConfirmacion(String correcto, String incorrecto) {
+		boolean ok = (boolean) Seguridad.descifrar(Seguridad.claveCifrado, ComunicacionEstatica.recibirObjeto());
+		if (ok) {
+			ControladorInterfaz.lanzarMensaje(correcto);
+		} else {
+			ControladorInterfaz.lanzarMensaje(incorrecto);
 		}
 	}
 }

@@ -6,6 +6,7 @@
 package controlador;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import modelo.Usuario;
 import vistas.Administracion;
 import vistas.VentanaAlumno;
@@ -20,8 +21,7 @@ public class ControladorInterfaz {
 	public static void tipoLogin(Usuario u, JFrame ventanaActiva) {
 		switch (u.getRol()) {
 		case 0:
-			new Administracion().setVisible(true);
-			ventanaActiva.dispose();
+			lanzarMensaje("Parece que aún no has sido activado por el administrador");
 			break;
 		case 1:
 			new VentanaAlumno(u.getIdUsuario()).setVisible(true);
@@ -41,4 +41,7 @@ public class ControladorInterfaz {
 		}
 	}
 	
+	public static void lanzarMensaje(String mensaje) {
+		JOptionPane.showMessageDialog(null, mensaje);
+	}
 }
